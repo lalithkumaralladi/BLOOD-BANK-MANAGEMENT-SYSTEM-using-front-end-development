@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LifeFlow - Advanced Blood Bank Management System</title>
+    <script>
+        // Force redirect to home page if somehow on login/register
+        if (window.location.pathname.includes('login.html') || window.location.pathname.includes('register.html')) {
+            window.location.href = 'index.html';
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add event listener for Donate Now button
+            const donateNowBtn = document.getElementById('donateNowBtn');
+            if (donateNowBtn) {
+                donateNowBtn.addEventListener('click', function() {
+                    // Scroll to the donor form section
+                    const donorSection = document.getElementById('donor-form');
+                    if (donorSection) {
+                        donorSection.scrollIntoView({ behavior: 'smooth' });
+                    }
+                });
+            }
+        });
+    </script>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <div class="logo">
+                    <span class="blood-drop">🩸</span>
+                    <span class="brand-text">LifeFlow</span>
+                </div>
+            </div>
+            <div class="nav-menu">
+                <a href="#home" class="nav-link">Home</a>
+                <a href="#find-blood" class="nav-link">Find Blood</a>
+                <a href="#donors" class="nav-link">Donors</a>
+                <a href="#emergency" class="nav-link">Emergency</a>
+                <a href="#contact" class="nav-link">Contact</a>
+                <div class="auth-buttons">
+                    <button id="donateNowBtn" class="btn btn--primary btn--sm">Donate Now</button>
+                </div>
+                <button class="theme-toggle btn btn--outline btn--sm" id="themeToggle">🌓</button>
+            </div>
+            <div class="nav-mobile">
+                <button class="theme-toggle btn btn--outline btn--sm" id="themeToggleMobile">🌓</button>
+                <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu Overlay -->
+    <div class="mobile-menu-overlay hidden" id="mobileMenuOverlay"></div>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu hidden" id="mobileMenu">
+        <div class="mobile-menu-header">
+            <div class="logo">
+                <span class="blood-drop">🩸</span>
+                <span class="brand-text">LifeFlow</span>
+            </div>
+            <button class="mobile-menu-close" id="mobileMenuClose">&times;</button>
+        </div>
+        <div class="mobile-menu-content">
+            <a href="#home" class="mobile-nav-link">Home</a>
+            <a href="#find-blood" class="mobile-nav-link">Find Blood</a>
+            <a href="#donors" class="mobile-nav-link">Donors</a>
+            <a href="login.html" class="mobile-nav-link">Login</a>
+            <a href="register.html" class="mobile-nav-link">Register</a>
+            <a href="#emergency" class="mobile-nav-link">Emergency</a>
+            <a href="#contact" class="mobile-nav-link">Contact</a>
+        </div>
+    </div>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-bg">
+            <div class="blood-drops">
+                <div class="drop drop-1">🩸</div>
+                <div class="drop drop-2">🩸</div>
+                <div class="drop drop-3">🩸</div>
+            </div>
+        </div>
+        <div class="container">
+            <div class="hero-content">
+                <h1 class="hero-title">Save Lives, Donate Blood</h1>
+                <p class="hero-subtitle">Connect donors with those in need through our advanced blood bank management system</p>
+                <div class="hero-actions">
+                    <button class="btn btn--primary btn--lg" onclick="scrollToSection('find-blood')">Find Blood Banks</button>
+                    <button class="btn btn--outline btn--lg" onclick="openDonorForm()">Become a Donor</button>
+                </div>
+                <div class="urgency-banner">
+                    <div class="urgency-content">
+                        <span class="urgency-icon">⚡</span>
+                        <span class="urgency-text" id="urgentText">O- blood urgently needed at Apollo Hospitals, Hyderabad for emergency surgery</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Live Statistics -->
+    <section class="statistics">
+        <div class="container">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalDonors">125,437</div>
+                    <div class="stat-label">Total Donors</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="bloodUnits">89,234</div>
+                    <div class="stat-label">Blood Units Collected</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="livesHelped">267,891</div>
+                    <div class="stat-label">Lives Helped</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="hospitalPartners">2,846</div>
+                    <div class="stat-label">Hospital Partners</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Find Blood Section -->
+    <section id="find-blood" class="find-blood">
+        <div class="container">
+            <div class="section-header">
+                <h2>Find Blood Banks Near You</h2>
+                <p>Search for hospitals and blood banks in your city</p>
+            </div>
+            
+            <div class="search-controls">
+                <div class="search-box">
+                    <input type="text" 
+                           class="form-control city-search" 
+                           id="citySearch" 
+                           placeholder="Enter city name (e.g., Hyderabad, Delhi, Mumbai, Bangalore)"
+                           autocomplete="off">
+                    <button class="search-btn btn btn--primary" onclick="searchHospitals()">Search</button>
+                </div>
+                <div class="filters">
+                    <select class="form-control" id="bloodTypeFilter">
+                        <option value="">All Blood Types</option>
+                        <option value="A+">A+</option>
+                        <option value="A-">A-</option>
+                        <option value="B+">B+</option>
+                        <option value="B-">B-</option>
+                        <option value="AB+">AB+</option>
+                        <option value="AB-">AB-</option>
+                        <option value="O+">O+</option>
+                        <option value="O-">O-</option>
+                    </select>
+                    <select class="form-control" id="urgencyFilter">
+                        <option value="">All Hospitals</option>
+                        <option value="emergency">Emergency Stock Only</option>
+                        <option value="24x7">24x7 Available</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="search-results" id="searchResults">
+                <div class="no-results">
+                    <div class="no-results-icon">🏥</div>
+                    <p>Enter a city name to find nearby hospitals and blood banks</p>
+                </div>
+            </div>
+
+            <!-- Blood Compatibility Checker -->
+            <div class="compatibility-section">
+                <h3>Blood Compatibility Checker</h3>
+                <div class="compatibility-tool">
+                    <div class="compatibility-inputs">
+                        <select class="form-control" id="donorBloodType">
+                            <option value="">Donor Blood Type</option>
+                            <option value="A+">A+</option>
+                            <option value="A-">A-</option>
+                            <option value="B+">B+</option>
+                            <option value="B-">B-</option>
+                            <option value="AB+">AB+</option>
+                            <option value="AB-">AB-</option>
+                            <option value="O+">O+</option>
+                            <option value="O-">O-</option>
+                        </select>
+                        <select class="form-control" id="recipientBloodType">
+                            <option value="">Recipient Blood Type</option>
+                            <option value="A+">A+</option>
+                            <option value="A-">A-</option>
+                            <option value="B+">B+</option>
+                            <option value="B-">B-</option>
+                            <option value="AB+">AB+</option>
+                            <option value="AB-">AB-</option>
+                            <option value="O+">O+</option>
+                            <option value="O-">O-</option>
+                        </select>
+                        <button class="btn btn--primary" onclick="checkCompatibility()">Check Compatibility</button>
+                    </div>
+                    <div class="compatibility-result" id="compatibilityResult"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Recent Donors Section -->
+    <section id="donors" class="donors">
+        <div class="container">
+            <div class="section-header">
+                <h2>Recent Donors & Heroes</h2>
+                <p>Join our community of life savers</p>
+            </div>
+            
+            <div class="donors-content">
+                <div class="recent-donations">
+                    <h3>Live Donation Feed</h3>
+                    <div class="donation-ticker" id="donationTicker">
+                        <!-- Donations will be populated by JavaScript -->
+                    </div>
+                </div>
+                
+                <div class="donor-achievements">
+                    <h3>Top Donors This Month</h3>
+                    <div class="achievement-list">
+                        <div class="achievement-item">
+                            <div class="donor-avatar">👨‍⚕️</div>
+                            <div class="donor-info">
+                                <div class="donor-name">Vikram Singh</div>
+                                <div class="donor-stats">22 donations • O- Universal Donor</div>
+                            </div>
+                            <div class="donor-badge gold">🏆</div>
+                        </div>
+                        <div class="achievement-item">
+                            <div class="donor-avatar">👩‍⚕️</div>
+                            <div class="donor-info">
+                                <div class="donor-name">Amit Patel</div>
+                                <div class="donor-stats">15 donations • B+ Regular</div>
+                            </div>
+                            <div class="donor-badge silver">🥈</div>
+                        </div>
+                        <div class="achievement-item">
+                            <div class="donor-avatar">👨‍💼</div>
+                            <div class="donor-info">
+                                <div class="donor-name">Rajesh Kumar</div>
+                                <div class="donor-stats">8 donations • O+ Helper</div>
+                            </div>
+                            <div class="donor-badge bronze">🥉</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Blood Collection Statistics -->
+            <div class="blood-stats">
+                <h3>Blood Collection Statistics</h3>
+                <div class="chart-container">
+                    <canvas id="bloodChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Emergency Section -->
+    <section id="emergency" class="emergency">
+        <div class="container">
+            <div class="section-header">
+                <h2>Emergency Blood Requests</h2>
+                <p>Immediate help needed - Every second counts</p>
+            </div>
+            
+            <div class="emergency-content">
+                <div class="emergency-requests" id="emergencyRequests">
+                    <!-- Emergency requests will be populated by JavaScript -->
+                </div>
+                
+                <div class="emergency-actions">
+                    <button class="btn btn--primary btn--full-width" onclick="openEmergencyForm()">
+                        🚨 Report Emergency Blood Need
+                    </button>
+                    <button class="btn btn--outline btn--full-width" onclick="openVolunteerForm()">
+                        🙋‍♂️ Volunteer for Emergency Response
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Blood Drives Section -->
+    <section class="blood-drives">
+        <div class="container">
+            <div class="section-header">
+                <h2>Upcoming Blood Drives</h2>
+                <p>Join community blood donation events</p>
+            </div>
+            
+            <div class="drives-grid" id="bloodDrives">
+                <!-- Blood drives will be populated by JavaScript -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact">
+        <div class="container">
+            <div class="section-header">
+                <h2>Get in Touch</h2>
+                <p>We're here to help save lives together</p>
+            </div>
+            
+            <div class="contact-content">
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <div class="contact-icon">📞</div>
+                        <div class="contact-details">
+                            <h4>Emergency Helpline</h4>
+                            <p>108 (All India Emergency)</p>
+                            <p>1066 (Blood Bank Helpline)</p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-icon">📧</div>
+                        <div class="contact-details">
+                            <h4>Email Support</h4>
+                            <p>help@lifeflow.org</p>
+                            <p>emergency@lifeflow.org</p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-icon">⏰</div>
+                        <div class="contact-details">
+                            <h4>24/7 Support</h4>
+                            <p>Available round the clock</p>
+                            <p>for emergency situations</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="contact-form">
+                    <form id="contactForm">
+                        <div class="form-group">
+                            <label class="form-label">Full Name</label>
+                            <input type="text" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Phone Number</label>
+                            <input type="tel" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Message</label>
+                            <textarea class="form-control" rows="4" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn--primary btn--full-width">Send Message</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <div class="logo">
+                        <span class="blood-drop">🩸</span>
+                        <span class="brand-text">LifeFlow</span>
+                    </div>
+                    <p>Connecting donors with those in need through technology and compassion.</p>
+                </div>
+                <div class="footer-links">
+                    <div class="footer-section">
+                        <h4>Quick Links</h4>
+                        <a href="#home">Home</a>
+                        <a href="#find-blood">Find Blood</a>
+                        <a href="#donors">Donors</a>
+                        <a href="#emergency">Emergency</a>
+                    </div>
+                    <div class="footer-section">
+                        <h4>Support</h4>
+                        <a href="#contact">Contact Us</a>
+                        <a href="#">FAQ</a>
+                        <a href="#">Privacy Policy</a>
+                        <a href="#">Terms of Service</a>
+                    </div>
+                    <div class="footer-section">
+                        <h4>Emergency</h4>
+                        <p>All India: <strong>108</strong></p>
+                        <p>Blood Bank: <strong>1066</strong></p>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 LifeFlow. All rights reserved. Saving lives together.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Modals -->
+    <div class="modal hidden" id="donorModal">
+        <div class="modal-content" style="max-width: 500px; margin: 2rem auto;">
+            <div class="modal-header" style="margin-bottom: 1.5rem;">
+                <h3 style="margin: 0; color: var(--color-text);">Become a Blood Donor</h3>
+                <button class="modal-close" onclick="closeDonorForm()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--color-gray-400);">&times;</button>
+            </div>
+            <form id="donorForm" class="auth-form" onsubmit="handleDonorForm(event)">
+                <div class="form-group">
+                    <label for="donorName">Full Name</label>
+                    <input type="text" id="donorName" required style="width: 100%; padding: 0.75rem; border: 1px solid var(--color-gray-300); border-radius: 8px;">
+                </div>
+                <div class="form-group">
+                    <label for="donorEmail">Email</label>
+                    <input type="email" id="donorEmail" required style="width: 100%; padding: 0.75rem; border: 1px solid var(--color-gray-300); border-radius: 8px;">
+                </div>
+                <div class="form-group">
+                    <label for="donorPhone">Phone Number</label>
+                    <input type="tel" id="donorPhone" required style="width: 100%; padding: 0.75rem; border: 1px solid var(--color-gray-300); border-radius: 8px;">
+                </div>
+                <div class="form-group">
+                    <label for="donorBloodType">Blood Type</label>
+                    <select id="donorBloodType" required style="width: 100%; padding: 0.75rem; border: 1px solid var(--color-gray-300); border-radius: 8px; background-color: white;">
+                        <option value="">Select Blood Type</option>
+                        <option value="A+">A+</option>
+                        <option value="A-">A-</option>
+                        <option value="B+">B+</option>
+                        <option value="B-">B-</option>
+                        <option value="AB+">AB+</option>
+                        <option value="AB-">AB-</option>
+                        <option value="O+">O+</option>
+                        <option value="O-">O-</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="donorCity">City</label>
+                    <input type="text" id="donorCity" required style="width: 100%; padding: 0.75rem; border: 1px solid var(--color-gray-300); border-radius: 8px;">
+                </div>
+                <div class="form-group">
+                    <label for="donorLastDonation">Last Donation Date (if any)</label>
+                    <input type="date" id="donorLastDonation" style="width: 100%; padding: 0.75rem; border: 1px solid var(--color-gray-300); border-radius: 8px;">
+                </div>
+                <button type="submit" class="btn btn--primary btn--block" style="margin-top: 1rem;">Register as Donor</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Notification -->
+    <div class="notification hidden" id="notification">
+        <div class="notification-content">
+            <span class="notification-icon"></span>
+            <span class="notification-text"></span>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div class="modal hidden" id="loginModal">
+        <div class="modal-content">
+            <span class="close" id="closeLoginModal">&times;</span>
+            <h2>Login</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="loginEmail" class="form-label">Email</label>
+                    <input type="email" id="loginEmail" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword" class="form-label">Password</label>
+                    <input type="password" id="loginPassword" class="form-control" required>
+                </div>
+                <button type="submit" class="btn btn--primary btn--full-width">Login</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+    <script src="auth.js"></script>
+</body>
+</html>
