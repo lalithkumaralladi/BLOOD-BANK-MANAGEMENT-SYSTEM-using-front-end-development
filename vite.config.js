@@ -4,17 +4,13 @@ import react from '@vitejs/plugin-react';
 
 export default defineConfig({
   plugins: [react()],
-  root: '.',
-  base: '/',
-  publicDir: 'public',
+  root: __dirname,
+  base: './',
   build: {
     outDir: 'dist',
     rollupOptions: {
-      input: {
-        main: resolve(__dirname, 'index.html')
-      }
-    },
-    chunkSizeWarningLimit: 1000
+      input: resolve(__dirname, 'index.html')
+    }
   },
   server: {
     port: 3000,
