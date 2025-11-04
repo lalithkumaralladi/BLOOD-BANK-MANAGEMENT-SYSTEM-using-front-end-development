@@ -5,10 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build --emptyOutDir",
+    "build": "vite build --outDir dist --emptyOutDir",
     "preview": "vite preview --port 4173 --host",
-    "start": "vite preview --port $PORT --host",
-    "render-build": "vite build --outDir dist"
+    "start": "vite preview --port $PORT --host"
   },
   "dependencies": {
     "react": "^18.2.0",
