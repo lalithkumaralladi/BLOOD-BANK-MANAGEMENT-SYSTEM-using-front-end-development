@@ -2,8 +2,10 @@ services:
   - type: web
     name: life-saver-blood-bank
     env: static
-    buildCommand: npm install && npm run build
-    staticPublishPath: ./build
+    buildCommand: |
+      npm install
+      npm run build
+    staticPublishPath: ./dist
     envVars:
       - key: NODE_VERSION
         value: 18.17.0
